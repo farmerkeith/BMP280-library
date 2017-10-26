@@ -1,0 +1,24 @@
+bmp280	KEYWORD1
+begin	KEYWORD2
+readTemperature	KEYWORD2
+readPressure	KEYWORD2
+
+readRawPressure	KEYWORD2
+calcPressure	KEYWORD2
+calcTemperature	KEYWORD2
+calcAltitude	KEYWORD2
+calcNormalisedPressure	KEYWORD2
+
+getCalibratonData	KEYWORD2
+readRegister	KEYWORD2
+readF4Sleep	KEYWORD2
+readF5Sleep	KEYWORD2
+updateRegister	KEYWORD2
+updateF4Control	KEYWORD2
+updateF4Control16xNormal	KEYWORD2
+updateF4Control16xSleep	KEYWORD2
+updateF4ControlSleep	KEYWORD2
+updateF5Config	KEYWORD2
+updateF5Config1msIIR16I2C	KEYWORD2
+updateF5ConfigSleep	KEYWORD2
+
