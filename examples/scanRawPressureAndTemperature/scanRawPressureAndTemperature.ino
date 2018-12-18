@@ -62,17 +62,17 @@ void setup() {
 
 void loop() {
   
-  if (millis() >= timerMillis){
+  if (millis() - timerMillis >= measurementInterval){
     startToMeasure();
-    timerMillis += measurementInterval;
+    timerMillis = millis();
     bmp280Millis = millis() + 1 + 2 * (temperatureSamples + pressureSamples); 
-  } // end of if (millis() == timerMillis)
+  } // end of if (millis() - timerMillis >= measurementInterval)
 
-  if (millis() >= bmp280Millis){
+  if ((long)(millis() - bmp280Millis) >=0){
     measurementEvent();
     eventCounter ++;
     bmp280Millis += measurementInterval;
-  } // end of if (millis() >= bmp280Millis)
+  } // end of if ((long)(millis() - bmp280Millis) >=0)
 
 //  saveCounter(eventCounter); // this also puts bmp0 to sleep
 //  goToSleep();

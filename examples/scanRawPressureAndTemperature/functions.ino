@@ -32,10 +32,11 @@ void measurementEvent(){
   
   long rawTemperature;
   long rawPressure1 = bmp0.readRawPressure (rawTemperature); // measure raw pressure and temperature
+  double t_fine;
+  double temperature = bmp0.calcTemperature(rawTemperature, t_fine);
   for (int i=-8; i<8; i++){
     long rawPressure = rawPressure1 + i;  
-    double temperature;
-    double pressure = bmp0.calcPressure (rawPressure, rawTemperature, temperature);
+    double pressure = bmp0.calcPressure (rawPressure, t_fine);
   //  Serial.print (" Time end measurement=");
   //  Serial.println((float)millis()/1000,3);
     Serial.print("Atm press, raw= ");
@@ -54,7 +55,7 @@ void measurementEvent(){
     Serial.print (eventCounter);
     Serial.print (" Time= ");
     Serial.println ((float)millis()/1000,3);
-  } // end of for (int i=-16; i<16; i++)
+  } // end of for (int i=-8; i<8; i++)
 
 } // end of void measurementEvent()
 

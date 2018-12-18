@@ -60,15 +60,15 @@ void setup() {
 
 void loop() {
   
-  if (millis() >= timerMillis){
+  if (millis() - timerMillis >= measurementInterval){
     startToMeasure();
-    timerMillis += measurementInterval; // time to start next measurement
     bmp280Millis = millis() + 1 + 2 * (temperatureSamples + pressureSamples); 
    // time to run measurementEvent (end of current measurement)
    // typical delay is (1 + 2*samples)ms
+    timerMillis = millis(); // current time
   } // end of if (millis() == timerMillis)
 
-  if (millis() >= bmp280Millis){
+  if ((long)(millis() - bmp280Millis) >=0){
     measurementEvent();
     eventCounter ++;
     bmp280Millis += measurementInterval; // set bmp280Millis above timerMillis 
