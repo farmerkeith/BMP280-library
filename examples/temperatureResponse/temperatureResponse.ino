@@ -19,9 +19,9 @@ void setup() {
 } // end of void setup() 
 
 void loop() {
-  if (millis() > cycleMillis) { // true if time has expired
+  if (millis() - cycleMillis >= cyclePeriod) { // true if time has expired
     runReport();
-    cycleMillis += cyclePeriod; // set time for next report
+    cycleMillis = millis(); // set current time
   }
 } // end of void loop() 
 
