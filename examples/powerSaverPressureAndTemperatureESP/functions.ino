@@ -1,23 +1,23 @@
 // tab for functions used by powerSaverPressureAndTemperature
 
 void measurementEvent(){
-  Serial.print (" Time start F3 check=");
+/*  Serial.print (" Time start F3 check=");
   Serial.print((float)millis()/1000,3);
   Serial.print (" Event elapsed Time=");
-  Serial.println((float)(millis()-baseEventTime)/1000,3);
+  Serial.println((float)(millis()-baseEventTime)/1000,3);*/
   while (bmp0.readRegister(0xF3)>>3); // loop until F3bit 3 ==0
   // ToDo check that measurement is finished before reading
-  Serial.print (" Time end F3 check=");
+/*  Serial.print (" Time end F3 check=");
   Serial.print ((float)millis()/1000,3);
   Serial.print (" Event elapsed Time=");
   Serial.println((float)(millis()-baseEventTime)/1000,3);
-  
+*/  
   double temperature;
   double pressure=bmp0.readPressure (temperature); // measure pressure and temperature
-  Serial.print (" Time end measurement=");
+/*  Serial.print (" Time end measurement=");
   Serial.print ((float)millis()/1000,3);
   Serial.print (" Event elapsed Time=");
-  Serial.println((float)(millis()-baseEventTime)/1000,3);
+  Serial.println((float)(millis()-baseEventTime)/1000,3);*/
   Serial.print("Atm press = ");
   Serial.print(pressure,4); // print with 4 decimal places
   Serial.print(" hPa. Temperature = ");
