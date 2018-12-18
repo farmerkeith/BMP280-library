@@ -26,6 +26,7 @@ const double Poffset = -0.38;
 double dPadj2 = 0, dPadj = 0, dPvariance;
 
 bmp280 bmp0(0, debug); // bmp address index, debugging
+bme280 bme1(1); // test
 
 #if no_of_sensors == 2
 bmp280 bmp1(1, 1); // bmp address index, debugging
