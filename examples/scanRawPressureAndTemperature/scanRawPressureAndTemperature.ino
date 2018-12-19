@@ -29,7 +29,7 @@ bmp280 bmp0 (0,bmp280Debug) ; // creates object bmp of type bmp280, base address
 void setup() {
   Serial.begin(115200);
 //  Serial.begin(9600); // use this if you get errors with the faster rate
-  Serial.println("\nStart of rawPressureAndTemperature sketch");
+  Serial.println("\nStart of scanRawPressureAndTemperature sketch");
 //  Serial.println("Printing pressure and temperature at 5 second intervals");
   Serial.print (" Time at start of setup=");
   Serial.println((float)millis()/1000,3);

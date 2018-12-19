@@ -16,7 +16,7 @@ const bool bmp280Debug=0; // controls serial printing for bmp280 transactions
 #include <Wire.h>
 
 unsigned long eventCounter=0; // to count measurement events
-const long measurementInterval = 5000;  // measurement interval in ms
+const long measurementInterval = 500;  // measurement interval in ms
 unsigned long timerMillis = 0;  // variable for duration calculation
 unsigned long bmp280Millis = 0;  // variable for measurement delay
 byte osrs_t=1; // initial setting for temperature oversampling 

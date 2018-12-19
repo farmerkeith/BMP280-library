@@ -30,7 +30,7 @@ void measurementEvent(){
 
 // ----------recover Event counter----------------------------
 int recoverCounter(){
-  // read value of counter back from bmp1
+  // read value of counter back from bmp0
   byte bmp0F4value= bmp0.readF4Sleep(); // 0 to 63
   byte bmp0F5value= bmp0.readF5Sleep(); // 0 to 63
   return bmp0F5value*64+bmp0F4value; // 0 to 4095
