@@ -3,7 +3,7 @@
 #include <farmerkeith_BMP280.h>
 #include <Wire.h>
 
-bme280 bme0 ; // creates object bme0 of type bme280, base address
+bme280 bme0(0,1) ; // creates object bme0 of type bme280, base address
 
 void setup() {
   Serial.begin(115200);
