@@ -15,22 +15,26 @@ class bmp280 { // for use with BMP280 sensors
     bmp280 (byte Addr, byte debug);
     bmp280 (byte Addr);
     bmp280 ();
-    // begin functions
-    void begin(byte osrs_t, byte osrs_p, byte mode, byte t_sb, byte filter, byte spi3W_en);
-    void begin();                // get calibration factors, set configuration
+
+    // begin and init functions
+    bool begin(byte osrs_t, byte osrs_p, byte mode, byte t_sb, byte filter, byte spi3W_en);
+    bool begin();                // get calibration factors, set configuration
+    bool init();
     // temperature functions
-    double readTemperature ();   // function
-    double calcTemperature (long rawTemperature);
-    double calcTemperature (long rawTemperature, double &t_fine);
+    double readTemperature ();   // returns degrees Celsius
+    float getTemperature();      // compatability function, returns degrees Celsius
+    double calcTemperature (long rawTemperature); // returns degrees Celsius
+    double calcTemperature (long rawTemperature, double &t_fine); // returns degrees Celsius
     // pressure functions
-    double readPressure (); // function, no parameter
-    double readPressure (double &temperature); // function
-    long readRawPressure (long &rawTemperature); // function
-    double calcPressure (long rawPressure, double t_fine);
+    double readPressure (); // pressure in hPa
+    double readPressure (double &temperature); // returns pressure in hPa, temperature in degrees Celsius
+    long readRawPressure (long &rawTemperature); // returns raw pressure uncalibrated
+    double calcPressure (long rawPressure, double t_fine); // returns pressure in hPa
+    uint32_t getPressure(); // compatability function, returns pressure in Pa (1Pa = 0.01 hPa)
     // utility functions
-    float calcAltitude (double pressure, float seaLevelhPa);
-    float calcAltitude (double pressure); // no parameter, standard seaLevelPressure assumed
-    float calcNormalisedPressure (double pressure, float altitude);
+    float calcAltitude (double pressure, float seaLevelhPa); // hPa, returns meters
+    float calcAltitude (double pressure); // hPa, standard seaLevelPressure assumed, returns meters
+    float calcNormalisedPressure (double pressure, float altitude); // hPa, meters
     // configuration controls
     byte readF4Sleep();           // function
     byte readF5Sleep();           // function
@@ -62,6 +66,11 @@ class bmp280 { // for use with BMP280 sensors
 
 }; // end of class bmp280
 
+class BMP280 : public bmp280 { // compatability version
+  public:
+    BMP280 ();
+};
+
 class bme280 : public bmp280 {             // for use with bme280 sensors
     // class bme280 inherits all the data and functions of bmp280
   public:
@@ -69,14 +78,16 @@ class bme280 : public bmp280 {             // for use with bme280 sensors
     bme280 (byte Addr, byte debug);
     bme280 (byte Addr);
     bme280 ();
-    // begin functions
-    void begin();                          // get calibration factors, set configuration
-    void begin(byte osrs_t, byte osrs_p, byte mode, byte t_sb, byte filter, byte spi3W_en, byte osrs_h);
+    // begin and init functions
+    bool begin();                          // get calibration factors, set configuration
+    bool begin(byte osrs_t, byte osrs_p, byte mode, byte t_sb, byte filter, byte spi3W_en, byte osrs_h);
+    bool init();
     // humidity functions
-    double readHumidity ();                // function
-    double readHumidity (double &temperature, double &pressure);  // function
+    double readHumidity ();                // relative humidity in percent
+    double readHumidity (double &temperature, double &pressure);  // RH%, Celsius, hPa
     long readRawHumidity (long &rawTemperature, long &rawPressure); // reads raw humidity, temperature and pressure
-    double calcHumidity(long rawHumidity, double t_fine);
+    double calcHumidity(long rawHumidity, double t_fine); // convert raw humidity code into %RH
+    uint32_t getHumidity();                // for compatability. Relative humidity in percent
     // configuration controls
     void updateF2Control(byte osrs_h);     // function
 
@@ -88,6 +99,11 @@ class bme280 : public bmp280 {             // for use with bme280 sensors
     int16_t  dig_H2, dig_H4, dig_H5;   // humidity calibration
     int8_t   dig_H6;                   // humidity calibration
 }; // end of class bme280
+
+class BME280 : public bme280 { // compatability version
+  public:
+    BME280 ();
+};
 
 #endif // for #ifndef farmerkeith_BMP280_h
 // end of file

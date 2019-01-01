@@ -1,18 +1,21 @@
 // created 15 Sep 2017
-// last update 16 Dec 2018
+// last update 31 Dec 2018
 // config constant to support 1 or 2 sensors added 16 Dec 2018
+// additions to make compatible with Grove/Seeed BME280 and BMP280 libraries
 
 const byte no_of_sensors = 1; // set to 1 for 1 sensor, 2 for 2 sensors
 const byte debug = 0;
-#include "farmerkeith_BMP280.h"
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
 #include "Wire.h"
+#include "farmerkeith_BMP280.h"
 const long maxLoops = 1000; // maximum number of times around loop()
 long loopCounter = 0; // variable to count times around loop()
 long bmpMillis = 0;
 byte F3reg0; // variable to hold mirror of bmp0 register 0xF3
 byte lastF3 = 0; // variable to hold previous value of F3
 int  F3checkCounter = 0; // variable to count how many times F3 was read
-const long measureDuration = 1000; // duration of each measurement
+const long measureDuration = 100; // duration of each measurement
 const long repeatMeasureInterval = 10000; // wait between sets of measurements
 long measureTime ; // variable for the time limit on the current measurement
 //double pressure0=0, temperature0=0;
@@ -25,8 +28,9 @@ double deltaPmax = -1000, deltaPmin = 1000, deltaPmean = 0;
 const double Poffset = -0.38;
 double dPadj2 = 0, dPadj = 0, dPvariance;
 
-bmp280 bmp0(0, debug); // bmp address index, debugging
-bme280 bme1(1); // test
+bmp280 bme280(0, debug); // bmp address index, debugging
+// BME280 bme280; // test
+//BME280 bmp0; // test
 
 #if no_of_sensors == 2
 bmp280 bmp1(1, 1); // bmp address index, debugging
@@ -46,9 +50,13 @@ void setup() {
   // initialise WeMos pins
   pinMode(BUILTIN_LED, OUTPUT); // sets the digital pin as output
   digitalWrite(BUILTIN_LED, LOW);    // turns the LED on
-  Wire.begin(); // start I2C interface
-  bmp0.begin(); // initialise bmp0
-  bmp0.updateF4Control16xSleep(); // put BMP0 to sleep
+  // Wire.begin(); // start I2C interface
+  
+  if(!bme280.init()) Serial.println("Wrong device type! turn on debug for details");
+  else Serial.println("bme280 initialised with default values");
+  // bmp0.begin(); // initialise bmp0
+  
+//  bme280.updateF4Control16xSleep(); // put BMP0 to sleep
 #if no_of_sensors == 2
   bmp1.begin(); // initialise bmp1
   bmp1.updateF4Control16xSleep(); // put BMP1 to sleep
@@ -56,13 +64,13 @@ void setup() {
   Serial.print ("Time is ");
   Serial.println ((float)millis() / 1000, 3);
   bmpMillis = millis();
-  F3reg0 = bmp0.readRegister(0xF3);    // get F3 value
+  F3reg0 = bme280.readRegister(0xF3);    // get F3 value
   lastF3 = F3reg0;
   Serial.print ("BMP0 register 0xF3= ");
   Serial.println (F3reg0, BIN);
   bmpMillis = millis();
-  bmp0.updateF4Control(1, 1, 3); //  1 temperature, 1 pressure, continuous
-  bmp0.updateF5Config(0, 0, 0); // 0.5ms standby, IIR filter OFF, I2C
+  bme280.updateF4Control(1, 1, 3); //  1 temperature, 1 pressure, continuous
+  bme280.updateF5Config(0, 0, 0); // 0.5ms standby, IIR filter OFF, I2C
 #if no_of_sensors == 2
   bmp1.updateF4Control(1, 1, 3); //  1 temperature, 1 pressure, continuous
   bmp1.updateF5Config(0, 0, 0); // 0.5ms standby, IIR filter OFF, I2C
@@ -84,7 +92,7 @@ void loop() {
   loopCounter++;
   if ((millis() < measureTime) && (endFlag == 0)) {
     F3checkCounter++;
-    F3reg0 = bmp0.readRegister(0xF3);    // get F3 value
+    F3reg0 = bme280.readRegister(0xF3);    // get F3 value
     if (F3reg0 != lastF3) {
       //      Serial.print ("last BMP0 0xF3= ");
       //      Serial.print (lastF3, BIN);
@@ -100,10 +108,11 @@ void loop() {
         //        Serial.println (" Waiting");
         measureCounter++;
         //        pressure0 = bmp0.readPressure (temperature0);
-        pressure0raw = bmp0.readRawPressure (temperature0raw);
+        float temp = bme280.getTemperature();
+        pressure0raw = bme280.readRawPressure (temperature0raw);
         double t_fine;
-        temperature0 = bmp0.calcTemperature (temperature0raw, t_fine);
-        pressure0 = bmp0.calcPressure (pressure0raw, t_fine);
+        temperature0 = bme280.calcTemperature (temperature0raw, t_fine);
+        pressure0 = bme280.calcPressure (pressure0raw, t_fine);
 #if no_of_sensors == 2
         pressure1 = bmp1.readPressure (temperature1);
         double deltaP = pressure1 - pressure0;
@@ -157,7 +166,7 @@ void loop() {
     if (endFlag == 0) {
       endFlag = 1;
       measureTime += repeatMeasureInterval; // set up next measurement cycle
-      bmp0.updateF4Control16xSleep(); // put bmp0 back to sleep
+      bme280.updateF4Control16xSleep(); // put bmp0 back to sleep
 #if no_of_sensors == 2
       bmp1.updateF4Control16xSleep(); // put bmp1 back to sleep
       dPvariance = (dPadj2 - dPadj * dPadj / measureCounter) / (measureCounter - 1);
@@ -177,10 +186,10 @@ void loop() {
       Serial.print ("\nMean pressure bmp0=");
       Serial.println(pressure0Mean);
       Serial.print ("Calculated altitude=");
-      Serial.println (bmp0.calcAltitude(pressure0Mean, 1011.2));
+      Serial.println (bme280.calcAltitude(pressure0Mean, 1011.2));
       Serial.print ("Calculated sea level pressure=");
       // Serial.println (bmp0.calcNormalisedPressure(pressure0Mean, 644.5)); // Rock Forest
-      Serial.println (bmp0.calcNormalisedPressure(pressure0Mean, 50)); // Balmain
+      Serial.println (bme280.calcNormalisedPressure(pressure0Mean, 50)); // Balmain
       Serial.print ("bmp0");
       if (no_of_sensors == 2) Serial.print (" and bmp1");
       Serial.print (" put to sleep");
@@ -201,8 +210,8 @@ void loop() {
       // Serial.println("\nLED ON");
       measureTime = millis() + measureDuration; // set time limit for measurement
       // wake up bmp0 and bmp1
-      bmp0.updateF4Control(2, 5, 3); //  2 temperature, 16 pressure, continuous
-      bmp0.updateF5Config(0, 4, 0); // 0.5ms standby, IIR filter 16, I2C
+      bme280.updateF4Control(2, 5, 3); //  2 temperature, 16 pressure, continuous
+      bme280.updateF5Config(0, 4, 0); // 0.5ms standby, IIR filter 16, I2C
 #if no_of_sensors == 2
       bmp1.updateF4Control(2, 5, 3); //  2 temperature, 16 pressure, continuous
       bmp1.updateF5Config(0, 4, 0); // 0.5ms standby, IIR filter 16, I2C
