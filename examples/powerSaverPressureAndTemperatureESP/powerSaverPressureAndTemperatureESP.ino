@@ -7,11 +7,14 @@
 // measurement read command is delayed, first by the calculated typical measurement time
 // and then by repeatedly checking the "measuring" bit of status register (0xF3) until ready
 
-const bool bmp280Debug = 0; // controls serial printing for bmp280 transactions
+const bool bmp280Debug = 1; // controls serial printing for bmp280 transactions
 // set to 1 to enable printing
 
 #include <farmerkeith_BMP280.h>
 #include <Wire.h>
+
+bmp280 bmp0 (0, bmp280Debug) ; // creates object bmp of type bmp280, base address
+// turn on debugging printing to show configuration and data transactions
 
 unsigned long eventCounter = 0; // to count measurement events
 const long measurementInterval = 5000;  // measurement interval in ms
@@ -22,9 +25,7 @@ byte osrs_p = 5; // setting for pressure oversampling
 // No. of samples = 2 ^ (osrs_p-1) or 0 for osrs_p==0
 byte temperatureSamples = 0, pressureSamples = 0;
 long baseEventTime = 0 ; // to measure time within event
-
-bmp280 bmp0 (0, bmp280Debug) ; // creates object bmp of type bmp280, base address
-// turn on debugging printing to show configuration and data transactions
+#include "functions.h" // tab file
 
 void setup() {
   Serial.begin(115200);
