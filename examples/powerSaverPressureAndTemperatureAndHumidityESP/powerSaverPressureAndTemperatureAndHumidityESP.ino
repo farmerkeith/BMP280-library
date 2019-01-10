@@ -27,7 +27,8 @@ byte osrs_h = 5; // setting for humidity oversampling
 // No. of samples = 2 ^ (osrs_h-1) or 0 for osrs_h==0
 byte temperatureSamples = 0, pressureSamples = 0, humiditySamples = 0;
 long baseEventTime = 0 ; // to measure time within event
-#include "functions.h" // tab file
+
+#include "PTHsleep.h" // tab file
 
 void setup() {
   Serial.begin(115200);
@@ -72,4 +73,6 @@ void setup() {
 
 void loop() {
 } // end of void loop()
+
+
 
